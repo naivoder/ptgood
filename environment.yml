@@ -1,0 +1,23 @@
+name: ptgood
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - numpy
+  - gym
+  - pytorch
+  - pip
+  - tqdm
+  - h5py
+  - termcolor
+  - click
+  - psutil
+  - pybullet
+  - gym-mujoco
+  - wandb
+  - pip:
+      - dm-control
+      - d4rl
+      - wandb
+      - git+https://github.com/denisyarats/dmc2gym.git
+
