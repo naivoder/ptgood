@@ -1,9 +1,7 @@
 # Planning to Go Out-of-Distribution
 [<img src="https://img.shields.io/badge/license-Apache_2.0-blue">](http://www.apache.org/licenses/LICENSE-2.0)
 
-Official repository for the paper "Planning to Go Out-of-Distribution in Offline-to-Online Reinforcement learning".
-
-Find the paper [here](https://arxiv.org/abs/2310.05723).
+Fork of the [official repository](https://github.com/BayesWatch/ptgood) for [the paper](https://arxiv.org/abs/2310.05723) "Planning to Go Out-of-Distribution in Offline-to-Online Reinforcement learning".
 
 # Offline pretraining & online fine-tuning
 To pretrain offline, set `--offline_steps` to some `int` greater than 0, do not set `--model_file` nor `--rl_file`, and
