@@ -38,6 +38,7 @@ python3 main.py \
 To fine-tune online, set `--offline_steps` to 0, set `--model_file`, `--rl_file`, and
 `--ceb_file` to your pretrained checkpoints, and set `--online_steps` to some `int` greater than 0.
 
+```commandline
 python3 main.py \
   --wandb_key wandb.txt \
   --env HalfCheetah-v5 \
@@ -63,6 +64,7 @@ python3 main.py \
   --ceb_z_dim 8 \
   --ceb_update_freq 10000000 \
   --learned_marginal
+```
 
 # Training encoder with the CEB
 
@@ -82,11 +84,5 @@ python3 pretrain_ceb.py
 ```
 
 # Cite
-```
-@inproceedings{mcinroe2024ptgood,
-    title={Planning to Go Out-of-Distribution in Offline-to-Online Reinforcement Learning},
-    author={Trevor McInroe, Adam Jelley, Stefano V. Albrecht, Amos Storkey},
-    booktitle={Reinforcement Learning Conference (RLC)}
-    year={2024}
-}
-```
+McInroe, Trevor, et al. "Planning to go out-of-distribution in offline-to-online reinforcement learning." Reinforcement Learning Conference (2024)
+
