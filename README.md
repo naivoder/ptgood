@@ -65,10 +65,20 @@ python3 main.py \
   --learned_marginal
 
 # Training encoder with the CEB
-I haven't touched this code yet. 
 
 ```commandline
-python3 pretrain_ceb.py --wandb_key ../wandb.txt --env dmc2gym_walker --z_dim 8 --beta 0.01 --bs 512 --n_steps 30000 --custom_filepath ${FILEPATH}/walker_walk_random.json --model_file ./models/dmc2gym_walker_random_31012.pt --rl_file ./policies/dmc2gym_walker_a1-k5_mcn_r0.5-21970-post_offline --critic_norm --horizon 2 --imagination_repeat 3 --ceb_file ./ceb_weights/dmc2gym-walker-random-Bp01-bidir-8
+python3 pretrain_ceb.py 
+  --wandb_key wandb.txt \
+  --env HalfCheetah-v5 \
+  --z_dim 8 \
+  --beta 0.01 \
+  --bs 512 \
+  --n_steps 30000 \
+  --model_file ./models/<model_weights.pt> \
+  --rl_file ./policies/<agent_weights.pt> \ 
+  --critic_norm \
+  --horizon 2 \
+  --imagination_repeat 3 
 ```
 
 # Cite
