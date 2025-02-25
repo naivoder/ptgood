@@ -4,8 +4,8 @@ python3 main.py \
   --offline_steps 0 \
   --online_steps 51000 \
   --model_file ./models/HalfCheetah-v5_a1_None_step753_69475.pt \
-  --rl_file ./policies/hopper_medium_pretrained_policy \
-  --ceb_file ./ceb_weights/hopper_medium_ceb \
+  --rl_file ./policies/HalfCheetah-v5_a1-k5_mNone_r0.5-98611-post_offline \
+  --ceb_file ./ceb_weights/HalfCheetah-v5 \
   --horizon 5 \
   --r 0.5 \
   --critic_norm \
