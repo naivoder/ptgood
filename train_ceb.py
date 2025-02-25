@@ -66,13 +66,13 @@ def main():
     parser.add_argument("--custom_filepath", default=None)
     parser.add_argument("--wandb_key", required=True)
     parser.add_argument("--bs", type=int, required=True)
-    parser.add_argument("--traj_length", type=int, required=True)
+    # parser.add_argument("--traj_length", type=int, required=True)
     parser.add_argument("--large", action="store_true")
     parser.add_argument("--z_dim", type=int, required=True)
     parser.add_argument("--beta", type=float, required=True)
     parser.add_argument("--model_file", default=None)
     parser.add_argument("--rl_file", default=None)
-    parser.add_argument("--horizon", type=int, required=True)
+    parser.add_argument("--horizon", type=int, default=2)
     parser.add_argument("--imagination_repeat", type=int, default=1)
     parser.add_argument("--rollout_batch_size", type=int, default=100000)
     parser.add_argument("--model_train_freq", type=int, default=250)
@@ -98,34 +98,35 @@ def main():
     device = "cuda"
 
     # --- Offline Replay via Minari ---
-    # For dee4rl-style training we load three qualities: random, medium, expert.
-    random_ds_name = gym_to_minari(args.env, "random")
+    simple_ds_name = gym_to_minari(args.env, "simple")
     medium_ds_name = gym_to_minari(args.env, "medium")
     expert_ds_name = gym_to_minari(args.env, "expert")
     print(
-        f"Loading Minari datasets: {random_ds_name}, {medium_ds_name}, {expert_ds_name}"
+        f"Loading Minari datasets: {simple_ds_name}, {medium_ds_name}, {expert_ds_name}"
     )
-    ds_random = minari.load_dataset(random_ds_name, download=True)
+    ds_simple = minari.load_dataset(simple_ds_name, download=True)
     ds_medium = minari.load_dataset(medium_ds_name, download=True)
     ds_expert = minari.load_dataset(expert_ds_name, download=True)
+
     # Convert each to a dictionary format
-    rnd_dict = convert_minari_to_dict(ds_random)
+    sim_dict = convert_minari_to_dict(ds_simple)
     med_dict = convert_minari_to_dict(ds_medium)
     exp_dict = convert_minari_to_dict(ds_expert)
+
     # Create OfflineReplay objects
-    offline_replay_rnd = OfflineReplay(rnd_dict, device, args.custom_filepath)
+    offline_replay_sim = OfflineReplay(sim_dict, device, args.custom_filepath)
     offline_replay_med = OfflineReplay(med_dict, device)
     offline_replay_exp = OfflineReplay(exp_dict, device)
-    # Select one based on the env string (if it already mentions a quality)
+
     env_lower = args.env.lower()
-    if "random" in env_lower:
-        selected_offline = offline_replay_rnd
+    if "simple" in env_lower:
+        selected_offline = offline_replay_sim
     elif "expert" in env_lower:
         selected_offline = offline_replay_exp
     elif "medium" in env_lower:
         selected_offline = offline_replay_med
     else:
-        selected_offline = offline_replay_rnd  # default
+        selected_offline = offline_replay_sim  # default
 
     # --- Training Replay Buffer for Model Imagination ---
     model_retain_epochs = 1
@@ -323,8 +324,8 @@ def main():
                 step_count = 0
                 # Update global rate using each offline replay and log metrics.
                 for quality, replay in zip(
-                    ["random", "medium", "expert"],
-                    [offline_replay_rnd, offline_replay_med, offline_replay_exp],
+                    ["simple", "medium", "expert"],
+                    [offline_replay_sim, offline_replay_med, offline_replay_exp],
                 ):
                     ceb.update_global_rate(replay, scaler=ceb.scaler)
                     print(f"{quality} rate: mean={ceb.rate_mean}, std={ceb.rate_std}")
@@ -363,8 +364,8 @@ def main():
         sa = torch.cat([s, a], dim=-1)
         step_hist["rate"] = ceb.compute_rate(sa).mean().item()
         for quality, replay in zip(
-            ["random", "medium", "expert"],
-            [offline_replay_rnd, offline_replay_med, offline_replay_exp],
+            ["simple", "medium", "expert"],
+            [offline_replay_sim, offline_replay_med, offline_replay_exp],
         ):
             batch = replay.sample(args.bs, True)
             s, a, *_ = batch
@@ -372,10 +373,10 @@ def main():
             step_hist[f"{quality}_rate"] = ceb.compute_rate(sa).mean().item()
         if i % 5000 == 0 and i > 0:
             for quality, replay in zip(
-                ["training", "random", "medium", "expert"],
+                ["training", "simple", "medium", "expert"],
                 [
                     training_replay,
-                    offline_replay_rnd,
+                    offline_replay_sim,
                     offline_replay_med,
                     offline_replay_exp,
                 ],
