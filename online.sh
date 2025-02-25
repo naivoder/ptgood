@@ -1,9 +1,9 @@
-python3 offline_to_online.py \
+python3 main.py \
   --wandb_key wandb.txt \
-  --env hopper-medium-v0 \
+  --env HalfCheetah-v5 \
   --offline_steps 0 \
   --online_steps 51000 \
-  --model_file ./models/hopper_medium_pretrained.pt \
+  --model_file ./models/HalfCheetah-v5_a1_None_step753_69475.pt \
   --rl_file ./policies/hopper_medium_pretrained_policy \
   --ceb_file ./ceb_weights/hopper_medium_ceb \
   --horizon 5 \

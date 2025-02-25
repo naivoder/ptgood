@@ -1,6 +1,7 @@
 python3 main.py \
   --wandb_key wandb.txt \
   --env HalfCheetah-v5 \
+  --ceb_planner \
   --offline_steps 50000 \
   --online_steps 0 \
   --horizon 5 \
@@ -10,4 +11,6 @@ python3 main.py \
   --imagination_freq 250 \
   --rl_updates_per 20 \
   --rollout_batch_size 100000 \
+  --save_rl_post_online \
+  --save_rl_post_offline \
   --custom_filepath None
