@@ -1,7 +1,6 @@
 python3 main.py \
   --wandb_key wandb.txt \
   --env HalfCheetah-v5 \
-  --ceb_planner \
   --offline_steps 50000 \
   --online_steps 0 \
   --horizon 5 \
