@@ -1,0 +1,13 @@
+python3 main.py \
+  --wandb_key wandb.txt \
+  --env HalfCheetah-v5 \
+  --offline_steps 50000 \
+  --online_steps 0 \
+  --horizon 5 \
+  --r 0.5 \
+  --critic_norm \
+  --model_train_freq 1000 \
+  --imagination_freq 250 \
+  --rl_updates_per 20 \
+  --rollout_batch_size 100000 \
+  --custom_filepath None

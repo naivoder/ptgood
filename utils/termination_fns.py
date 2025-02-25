@@ -9,10 +9,12 @@ def hopper_term_fn(obs, act, next_obs):
 
     height = next_obs[:, 0]
     angle = next_obs[:, 1]
-    not_done = torch.isfinite(next_obs).all(-1) \
-                * (next_obs[:, 1:].abs() < 100).all(-1) \
-                * (height > .7) \
-                * (torch.abs(angle) < .2)
+    not_done = (
+        torch.isfinite(next_obs).all(-1)
+        * (next_obs[:, 1:].abs() < 100).all(-1)
+        * (height > 0.7)
+        * (torch.abs(angle) < 0.2)
+    )
 
     done = ~not_done
     done = done[:, None]
@@ -22,10 +24,7 @@ def hopper_term_fn(obs, act, next_obs):
 def walker2d_term_fn(obs, action, next_obs):
     height = next_obs[:, 0]
     angle = next_obs[:, 1]
-    not_done = (height > 0.8) \
-               * (height < 2.0) \
-               * (angle > -1.0) \
-               * (angle < 1.0)
+    not_done = (height > 0.8) * (height < 2.0) * (angle > -1.0) * (angle < 1.0)
     done = ~not_done
     done = done[:, None]
     return done
@@ -47,6 +46,7 @@ def fake_term_fn(obs, act, next_obs):
     # [100k, 1]
     return torch.ones((next_obs.shape[0], 1)).to(next_obs.device).bool()
 
+
 def anttruncobs_term_fn(obs, act, next_obs):
     # not_terminated = (
     #         np.isfinite(next_obs).all() and next_obs[0] >= 0.2 and next_obs[0] <= 1.0
@@ -63,20 +63,22 @@ def anttruncobs_term_fn(obs, act, next_obs):
 
 
 termination_fns = {
-    'halfcheetah': None,
-    'walker2d': walker2d_term_fn,
-    'hopper': hopper_term_fn,
-    'walker2dnoterm': None,
-    'hoppernoterm': None,
-    'dmc2gym_walker': None,
-    'dmc2gym_hopper': None,
-    'dmc2gym_humanoid': None,
-    'dmc2gym_quadruped': None,
-    'pen': None,
-    'hammer': None,
-    'relocate': None,
-    'door': None,
-    'HumanoidTruncatedObs': humanoidtruncobs_term_fn,
-    'HumanoidTruncatedObsMBPOReward': humanoidtruncobs_term_fn,
-    'AntTruncatedObs': None
+    "HalfCheetah": None,
+    "halfcheetah": None,
+    "walker2d": walker2d_term_fn,
+    "mujoco/hopper": hopper_term_fn,
+    "Hopper": None,
+    "walker2dnoterm": None,
+    "hoppernoterm": None,
+    "dmc2gym_walker": None,
+    "dmc2gym_hopper": None,
+    "dmc2gym_humanoid": None,
+    "dmc2gym_quadruped": None,
+    "pen": None,
+    "hammer": None,
+    "relocate": None,
+    "door": None,
+    "HumanoidTruncatedObs": humanoidtruncobs_term_fn,
+    "HumanoidTruncatedObsMBPOReward": humanoidtruncobs_term_fn,
+    "AntTruncatedObs": None,
 }
