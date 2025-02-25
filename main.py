@@ -12,10 +12,12 @@ from utils.data import preprocess_sac_batch, preprocess_sac_batch_oto
 from planners.ceb_planners import CEBVecTree
 import argparse
 from tqdm import tqdm
-import json
 import wandb
 from copy import deepcopy
 import os
+import warnings
+
+warnings.simplefilter("ignore")
 
 
 def convert_minari_to_dict(dataset):
@@ -340,6 +342,10 @@ def main():
         early_stop_counter = 0
 
         while early_stop_counter < early_stop:
+            print(
+                f"Step: {model_fitting_steps}, Early Stop Counter: {early_stop_counter}",
+                end="\r",
+            )
             loss_hist = dynamics_ens.train_single_step(dynamics_ens.replay, 0.2, bs)
 
             batch_size = 1024
