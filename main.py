@@ -259,7 +259,7 @@ def main():
             ceb.load(args.ceb_file)
             print(f"Large encoders: {[1024, 512, 512]}")
         except Exception as e:
-            print(e)
+            # print(e)
             ceb = CEB(
                 state_dim,
                 action_dim,
