@@ -69,19 +69,18 @@ python3 main.py \
 # Training encoder with the CEB
 
 ```commandline
-python3 pretrain_ceb.py 
+python3 train_ceb.py \
   --wandb_key wandb.txt \
   --env HalfCheetah-v5 \
   --z_dim 8 \
   --beta 0.01 \
   --bs 512 \
   --n_steps 30000 \
-  --model_file ./models/<model_weights.pt> \
-  --rl_file ./policies/<agent_weights.pt> \ 
-  --critic_norm \
-  --horizon 2 \
-  --imagination_repeat 3 
+  --model_file ./models/HalfCheetah-v5_<your_model>.pt \
+  --rl_file rnd \     
+  --ceb_file ./ceb_weights/HalfCheetah-v5
 ```
+Should be using policy, but there was a 🐛 I need to investigate...
 
 # Cite
 McInroe, Trevor, et al. "Planning to go out-of-distribution in offline-to-online reinforcement learning." Reinforcement Learning Conference (2024)
