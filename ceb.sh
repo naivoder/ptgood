@@ -1,0 +1,11 @@
+python train_ceb.py \
+    --wandb_key wandb.txt \
+    --env Hopper-v5 \
+    --z_dim 8 \
+    --beta 0.01 \
+    --bs 512 \
+    --n_steps 30000 \
+    --critic_norm \
+    --model_file ./models/Hopper-v5.pt \
+    --rl_file ./policies/Hopper-v5 \
+    --ceb_file ./ceb_weights/Hopper-v5 

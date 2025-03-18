@@ -109,7 +109,7 @@ def main():
 
     # Derive the Minari dataset name from the Gymnasium env name.
     base = args.env.split("-")[0].lower()
-    minari_name = f"mujoco/{base}/medium-v0"
+    minari_name = f"mujoco/{base}/simple-v0"
 
     # Create Gymnasium environments.
     env = gym.make(args.env)
@@ -147,7 +147,7 @@ def main():
 
     print(f"Model replay buffer capacity: {max_model_buffer_size}\n")
 
-    termination_fn = termination_fns[args.env.split("-")[0]]
+    termination_fn = termination_fns[args.env.split("-")[0].lower()]
     print(f"Using termination function: {termination_fn}")
 
     if (
@@ -244,7 +244,7 @@ def main():
     online_ratio = args.r
 
     # CEB setup.
-    if args.ceb_file:
+    if args.ceb_planner:
         print(f"Loading CEB encoders from: {args.ceb_file}\n")
         try:
             ceb = CEB(
@@ -256,8 +256,9 @@ def main():
                 args.ceb_beta,
                 "cuda",
             )
-            ceb.load(args.ceb_file)
-            print(f"Large encoders: {[1024, 512, 512]}")
+            if args.ceb_file:
+                ceb.load(args.ceb_file)
+                print(f"Large encoders: {[1024, 512, 512]}")
         except Exception as e:
             # print(e)
             ceb = CEB(
@@ -269,8 +270,9 @@ def main():
                 args.ceb_beta,
                 "cuda",
             )
-            ceb.load(args.ceb_file)
-            print(f"Small encoders: {[256, 128, 64]}")
+            if args.ceb_file:
+                ceb.load(args.ceb_file)
+                print(f"Small encoders: {[256, 128, 64]}")
 
     # Load the offline dataset via Minari and convert it to a dictionary.
     minari_dataset = minari.load_dataset(minari_name, download=True)
@@ -302,12 +304,12 @@ def main():
     os.environ["WANDB_CONFIG_DIR"] = "./wandb"
     mode = "online"
 
-    config = {"name": f"{args.env}_k{args.horizon}_m{args.model_notes}"}
+    config = {"name": f"{args.env}"}
     wandb.init(
         project=args.exp_name,
         # entity="{YOUR-ENTITY}",
         mode=mode,
-        name=f"{args.env}_a{args.a_repeat}_k{args.horizon}_m{args.model_notes}_r{real_ratio}_online{args.online_steps}_{seed}",
+        name=f"{args.env}",
         config=config,
     )
 
@@ -421,12 +423,10 @@ def main():
                         extra = "medium"
                     elif "medium-replay" in args.custom_filepath:
                         extra = "medium-replay"
-                print(
-                    f"Saving model to: ./models/{args.env}_a{args.a_repeat}_{extra}_{seed}.pt\n"
-                )
+                print(f"Saving model to: ./models/{args.env}.pt\n")
                 torch.save(
                     dynamics_ens.state_dict(),
-                    f"./models/{args.env}_a{args.a_repeat}_{extra}_step{model_fitting_steps}_{seed}.pt",
+                    f"./models/{args.env}.pt",
                 )
 
         extra = None
@@ -437,12 +437,10 @@ def main():
                 extra = "medium"
             elif "medium-replay" in args.custom_filepath:
                 extra = "medium-replay"
-        print(
-            f"Saving model to: ./models/{args.env}_a{args.a_repeat}_{extra}_{seed}.pt\n"
-        )
+        print(f"Saving model to: ./models/{args.env}.pt\n")
         torch.save(
             dynamics_ens.state_dict(),
-            f"./models/{args.env}_a{args.a_repeat}_{extra}_step{model_fitting_steps}_{seed}.pt",
+            f"./models/{args.env}.pt",
         )
 
     # Offline pre-training.
@@ -575,12 +573,8 @@ def main():
                     pbar.update(1)
 
         if args.save_rl_post_offline:
-            print(
-                f"Saving RL file to: ./policies/{args.env}_a{args.a_repeat}-k{args.horizon}_m{args.model_notes}_r{real_ratio}-{seed}-post_offline"
-            )
-            agent.save(
-                f"./policies/{args.env}_a{args.a_repeat}-k{args.horizon}_m{args.model_notes}_r{real_ratio}-{seed}-post_offline"
-            )
+            print(f"Saving RL file to: ./policies/{args.env}")
+            agent.save(f"./policies/{args.env}")
     else:
         print(f"Loading RL file from {args.rl_file}\n")
         agent.load(args.rl_file)

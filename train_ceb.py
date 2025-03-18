@@ -34,6 +34,7 @@ def convert_minari_to_dict(dataset):
     """
     all_obs, all_actions, all_rewards = [], [], []
     all_terminals, all_next_obs = [], []
+
     for episode_data in dataset.iterate_episodes():
         obs = np.array(episode_data.observations)
         actions = np.array(episode_data.actions)
@@ -95,6 +96,7 @@ def main():
 
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
+    print(f"State dim: {state_dim}, Action dim: {action_dim}")
     device = "cuda"
 
     # --- Offline Replay via Minari ---
@@ -147,7 +149,7 @@ def main():
     training_replay.max_size = min_model_buffer_size
 
     # --- Termination Function ---
-    termination_fn = termination_fns[args.env.split("-")[0]]
+    termination_fn = termination_fns[args.env.split("-")[0].lower()]
     print(f"Using termination function: {termination_fn}")
 
     # --- Dynamics Ensemble & RL Agent Setup ---
@@ -202,6 +204,7 @@ def main():
     else:
         agent_mlp = [256, 256, 256]
     print(f"Agent MLP: {agent_mlp}")
+
     agent = SAC(
         state_dim,
         action_dim,
@@ -224,6 +227,12 @@ def main():
         device,
         args.rl_grad_clip,
     )
+
+    # print(agent.critic)
+    # checkpoint = torch.load(
+    #     "./policies/HalfCheetah-v5_a1-k5_mNone_r0.5-98611-post_offline_critic.pt"
+    # )
+    # print(checkpoint.keys())
 
     # --- Load Pretrained Dynamics / RL (if provided) ---
     if args.model_file and args.rl_file:
@@ -345,6 +354,7 @@ def main():
     marginal = GMM(n_dists, args.z_dim)
     marginal_opt = torch.optim.Adam(marginal.parameters(), lr=1e-3)
     ceb.marginal_z = marginal
+
     for i in tqdm(range(50000), desc="Training Marginal"):
         batch = training_replay.sample(args.bs, True)
         s, a, *_ = batch
