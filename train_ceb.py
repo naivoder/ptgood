@@ -86,6 +86,12 @@ def main():
     parser.add_argument("--ceb_pretrained_file", type=str, default=None)
     args = parser.parse_args()
 
+    if args.critic_norm:
+        save_str = args.env + "_norm"
+        args.ceb_file += "_norm"
+    else:
+        save_str = args.env
+
     # Create Gymnasium environments
     env = gym.make(args.env)
     eval_env = gym.make(args.env)
@@ -300,7 +306,7 @@ def main():
     os.environ["WANDB_CONFIG_DIR"] = "./wandb"
     wandb.init(
         project="oto-mbpo",
-        name=f"CEB_{args.env}_B{args.beta}_{seed}",
+        name=f"CEB_{save_str}",
     )
 
     # --- Train CEB (or load pretrained) ---
@@ -396,8 +402,7 @@ def main():
                 step_hist[f"{quality}_rate_std_lower"] = ceb.rate_mean - ceb.rate_std
         wandb.log(step_hist)
 
-    if args.ceb_file:
-        ceb.save(args.ceb_file)
+    ceb.save(save_str)
 
 
 if __name__ == "__main__":

@@ -107,6 +107,11 @@ def main():
     if args.custom_filepath == "None":
         args.custom_filepath = None
 
+    if args.critic_norm:
+        save_str = f"{args.env}_norm"
+    else:
+        save_str = args.env
+
     # Derive the Minari dataset name from the Gymnasium env name.
     base = args.env.split("-")[0].lower()
     minari_name = f"mujoco/{base}/simple-v0"
@@ -147,8 +152,9 @@ def main():
 
     print(f"Model replay buffer capacity: {max_model_buffer_size}\n")
 
-    termination_fn = termination_fns[args.env.split("-")[0].lower()]
-    print(f"Using termination function: {termination_fn}")
+    # termination_fn = termination_fns[args.env.split("-")[0].lower()]
+    # print(f"Using termination function: {termination_fn}")
+    termination_fn = None
 
     if (
         "humanoid" in args.env.lower()
@@ -426,7 +432,7 @@ def main():
                 print(f"Saving model to: ./models/{args.env}.pt\n")
                 torch.save(
                     dynamics_ens.state_dict(),
-                    f"./models/{args.env}.pt",
+                    f"./models/{save_str}.pt",
                 )
 
         extra = None
@@ -440,7 +446,7 @@ def main():
         print(f"Saving model to: ./models/{args.env}.pt\n")
         torch.save(
             dynamics_ens.state_dict(),
-            f"./models/{args.env}.pt",
+            f"./models/{save_str}.pt",
         )
 
     # Offline pre-training.
@@ -573,8 +579,8 @@ def main():
                     pbar.update(1)
 
         if args.save_rl_post_offline:
-            print(f"Saving RL file to: ./policies/{args.env}")
-            agent.save(f"./policies/{args.env}")
+            print(f"Saving RL file to: ./policies/{save_str}")
+            agent.save(f"./policies/{save_str}")
     else:
         print(f"Loading RL file from {args.rl_file}\n")
         agent.load(args.rl_file)
@@ -983,9 +989,7 @@ def main():
                     )
 
                 if args.save_rl_post_online:
-                    agent.save(
-                        f"{args.env}_a{args.a_repeat}_bc{args.bc_policy}_k{args.horizon}_m{args.model_notes}_r{real_ratio}_online{args.online_steps}_{seed}"
-                    )
+                    agent.save(f"{save_str}")
 
 
 if __name__ == "__main__":
